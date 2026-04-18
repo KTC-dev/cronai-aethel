@@ -4,11 +4,13 @@ const apiKey = 'sk_7cc5d72c03ee567517cc9a93416d86fe8b9a196c364fb328';
 async function testElevenLabsVoiceGeneration() {
   try {
     const response = await fetch(apiEndpoint, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
         'Accept': 'audio/mpeg',
       },
+      body: JSON.stringify({ text: 'Hello, this is a test of CronAi Aethel voice generation.' }),
     });
 
     console.log(`Response status: ${response.status}`);
