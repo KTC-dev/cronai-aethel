@@ -1,4 +1,4 @@
-const apiEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech/WY0rHxCdMd9mgNzpBFrg';
+const apiEndpoint = 'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM';
 const apiKey = 'sk_7cc5d72c03ee567517cc9a93416d86fe8b9a196c364fb328';
 
 async function testElevenLabsVoiceGeneration() {
@@ -13,17 +13,36 @@ async function testElevenLabsVoiceGeneration() {
       body: JSON.stringify({ text: 'Hello, this is a test of CronAi Aethel voice generation.' }),
     });
 
+    console.log(`Response status: ${response.status}`);
+    console.log(`Response content type: ${response.headers.get('content-type')}`);
+
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(`Error: ${response.status} ${response.statusText}`);
-      console.error(await response.text());
+      console.error(errorText);
       return;
     }
 
-    const contentType = response.headers.get('Content-Type');
-    if (contentType !== 'audio/mpeg') {
-      console.error(`Error: Unexpected content type: ${contentType}`);
+    if (response.headers.get('content-type') !== 'audio/mpeg') {
+      const errorText = await response.text();
+      console.error(`Error: Unexpected content type: ${response.headers.get('content-type')}`);
+      console.error(errorText);
       return;
     }
 
     const buffer = await response.arrayBuffer();
-    if (buffer.byteLength
+    if (buffer.byteLength === 0) {
+      console.error('Error: Empty audio buffer');
+      return;
+    }
+
+    const fs = require('fs');
+    fs.writeFileSync('test.mp3', Buffer.from(buffer));
+    console.log('Audio file saved successfully!');
+    console.log(`File size: ${buffer.byteLength} bytes`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+testElevenLabsVoiceGeneration();
